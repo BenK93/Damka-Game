@@ -7,11 +7,14 @@ h1 {
 body {
   background: #598995;
   text-align: center;
-  background-image: url(images/play-3981386_1280.jpg);
+
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
+}
+.body {
+  background-image: url(images/play-3981386_1280.jpg);
 }
 .upline {
   position: absolute;
