@@ -196,10 +196,6 @@ function extraMove(moveTo, moveFrom, color, extraNum) {
   $("#td-" + moveFrom).addClass("td-clickable");
 }
 
-// function addQueenClass(color, queenArray) {
-
-// }
-
 $(document).on("click", ".table", function() {
   var blackQueenSpots = [$("#td-2"), $("#td-4"), $("#td-6"), $("#td-8")];
   var whiteQueenSpots = [$("#td-64"), $("#td-66"), $("#td-68"), $("#td-70")];

@@ -7,7 +7,7 @@ h1 {
 body {
   background: #598995;
   text-align: center;
-  background: url(images/play-3981386_1280.jpg) no-repeat center center fixed;
+  background-image: url(images/play-3981386_1280.jpg);
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
