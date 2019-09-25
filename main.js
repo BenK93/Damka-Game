@@ -138,6 +138,7 @@ function removingEaten(steps, moveTo, moveFrom, boolean) {
 }
 function blackMove(steps, moveTo, moveFrom, color) {
   $(".border").hide();
+
   $("#td-" + moveTo).html(
     "<div data-color='" +
       color +
@@ -151,6 +152,9 @@ function blackMove(steps, moveTo, moveFrom, color) {
 }
 function whiteMove(steps, moveTo, moveFrom, color) {
   $(".border").hide();
+  //  $('.checker').each(function(index){
+  //   $(this).addClass('queen');
+  //   });
   $("#td-" + moveTo).html(
     "<div data-color='" +
       color +
@@ -192,6 +196,27 @@ function extraMove(moveTo, moveFrom, color, extraNum) {
   $("#td-" + moveFrom).addClass("td-clickable");
 }
 
+// function addQueenClass(color, queenArray) {
+
+// }
+
+$(document).on("click", ".table", function() {
+  var blackQueenSpots = [$("#td-2"), $("#td-4"), $("#td-6"), $("#td-8")];
+  var whiteQueenSpots = [$("#td-64"), $("#td-66"), $("#td-68"), $("#td-70")];
+  for (let index = 0; index < 4; index++) {
+    const element = blackQueenSpots[index];
+    if (element.children().hasClass("checker-black")) {
+      element.children().addClass("queen");
+    }
+  }
+  for (let index = 0; index < 4; index++) {
+    const element = whiteQueenSpots[index];
+    if (element.children().hasClass("checker-white")) {
+      element.children().addClass("queen");
+    }
+  }
+});
+
 $(document).on("click", ".td-clickable", function() {
   if ($(".checker").hasClass("border")) {
     if ($(this).html().length == 0) {
@@ -204,25 +229,22 @@ $(document).on("click", ".td-clickable", function() {
       let stepsWhite = moveTo - moveFrom;
       let color = $(".border").data("color");
 
-      // simple moving forward checkers
-      if (
-        (stepsBlack == 8 && color == "black") ||
-        (stepsBlack == 10 && color == "black")
-      ) {
+      // simple moving forward checkers white & black
+      if ((stepsBlack == 8 || stepsBlack == 10) && color == "black") {
         blackMove(stepsBlack, moveTo, moveFrom, color);
         addClickable();
-      } else if (
-        (stepsBlack == -8 && color == "white") ||
-        (stepsBlack == -10 && color == "white")
-      ) {
+      } else if ((stepsWhite == 8 || stepsWhite == 10) && color == "white") {
         whiteMove(stepsWhite, moveTo, moveFrom, color);
         addClickable();
       }
-
+      /**
+       * eating opponent part with extra eating moves
+       */
       if (
         stepsBlack == 16 &&
-        $("#td-" + (moveTo + 8)).html().length > 0 &&
-        $(".border").hasClass("checker-black")
+        $("#td-" + (moveTo + 8))
+          .children()
+          .hasClass("checker-white")
       ) {
         blackMove(stepsBlack, moveTo, moveFrom, color);
         if (
@@ -240,24 +262,15 @@ $(document).on("click", ".td-clickable", function() {
           $("#td-" + (moveTo - 10)).find("div.checker-white").length != 0
         ) {
           extraMove(moveTo, moveFrom, color, -20);
-          // 9 18 27 36 45 54 63
         }
-        if (
-          $("#td-2") === moveTo ||
-          $("#td-4") === moveTo ||
-          $("#td-6") === moveTo ||
-          $("#td-8") === moveTo
-        ) {
-          $("#td-" + moveTo)
-            .children()
-            .addClass("queen");
-        }
+      }
 
-        // eating to the left -- black
-      } else if (
+      // eating to the left -- black
+      if (
         stepsBlack == 20 &&
-        $("#td-" + (moveTo + 10)).html().length > 0 &&
-        $(".border").hasClass("checker-black")
+        $("#td-" + (moveTo + 10))
+          .children()
+          .hasClass("checker-white")
       ) {
         blackMove(stepsBlack, moveTo, moveFrom, color);
         if (
@@ -276,11 +289,14 @@ $(document).on("click", ".td-clickable", function() {
         ) {
           extraMove(moveTo, moveFrom, color, -20);
         }
-        // white eating black
-      } else if (
+      }
+
+      // white eating black
+      if (
         stepsWhite == 20 &&
-        $("#td-" + (moveTo - 10)).html().length > 0 &&
-        $(".border").hasClass("checker-white")
+        $("#td-" + (moveTo - 10))
+          .children()
+          .hasClass("checker-black")
       ) {
         whiteMove(stepsWhite, moveTo, moveFrom, color);
         if (
@@ -299,10 +315,12 @@ $(document).on("click", ".td-clickable", function() {
         ) {
           extraMove(moveTo, moveFrom, color, -16);
         }
-      } else if (
+      }
+      if (
         stepsWhite == 16 &&
-        $("#td-" + (moveTo - 8)).html().length > 0 &&
-        $(".border").hasClass("checker-white")
+        $("#td-" + (moveTo - 8))
+          .children()
+          .hasClass("checker-black")
       ) {
         whiteMove(stepsWhite, moveTo, moveFrom, color);
         if (

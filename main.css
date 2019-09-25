@@ -105,7 +105,8 @@ body {
   border: 2px solid yellow;
 }
 .queen {
-  background-image: url(Images/crown.png);
+  background-image: url(Images/crown-black.png);
   background-position: center;
-  background-size: 55px;
+  background-repeat: no-repeat;
+  background-size: 60px;
 }
