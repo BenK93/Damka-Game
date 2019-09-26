@@ -11,15 +11,7 @@ function createTable() {
       if (count % 2 == 0) {
         color = "black";
       }
-      tableBoard +=
-        "<td data-tdid='td" +
-        count +
-        "' data-number='" +
-        count +
-        "' id='td-" +
-        count +
-        "' class='" +
-        color +
+      tableBoard +="<td data-tdid='td" +count +"' data-number='" + count + "' id='td-" +count +"' class='" +color +
         "'></td>";
     }
     count++;
@@ -79,12 +71,12 @@ $(document).on("click", ".btn", function() {
   if (decs) {
     createTable();
     checkers();
-    switCheckers(true);
+    switchTurn(true);
   }
 });
-// // 0 - black / 1 - white
+// false - black / true - white
 // var turn = false;
-function switCheckers(turn) {
+function switchTurn(turn) {
   if (turn) {
     turn = false;
     $(".checker-white").removeClass("checker-clickable");
@@ -113,85 +105,42 @@ function removingEaten(steps, moveTo, moveFrom, boolean) {
   // removing the eaten element
   // boolean true = white , black = false
   if (steps == 16) {
-    if (boolean) {
-      moveTo -= 8;
-    } else {
-      moveTo += 8;
-    }
-    $("#td-" + moveTo)
-      .children()
-      .remove();
-    $("#td-" + moveTo).addClass("td-clickable");
-    $("#td-" + moveFrom).addClass("td-clickable");
+    if (boolean) {moveTo -= 8;} else {moveTo += 8;}
   } else if (steps == 20) {
-    if (boolean) {
-      moveTo -= 10;
-    } else {
-      moveTo += 10;
-    }
-    $("#td-" + moveTo)
-      .children()
-      .remove();
-    $("#td-" + moveTo).addClass("td-clickable");
-    $("#td-" + moveFrom).addClass("td-clickable");
+    if (boolean) {moveTo -= 10;} else { moveTo += 10;}
+  }else if(steps == -16){
+    if (boolean) {moveTo += 8;} else {moveTo -= 8;}
+  }else if(steps == -20){
+    if (boolean) {moveTo += 10;} else {moveTo -= 10;}
   }
-}
-function blackMove(steps, moveTo, moveFrom, color) {
-  $(".border").hide();
-
-  $("#td-" + moveTo).html(
-    "<div data-color='" +
-      color +
-      "' class='checker checker-" +
-      color +
-      "'></div>"
-  );
-  $(".border").remove();
-  if (steps > 10) removingEaten(steps, moveTo, moveFrom, false);
-  switCheckers(false);
-}
-function whiteMove(steps, moveTo, moveFrom, color) {
-  $(".border").hide();
-  //  $('.checker').each(function(index){
-  //   $(this).addClass('queen');
-  //   });
-  $("#td-" + moveTo).html(
-    "<div data-color='" +
-      color +
-      "' class='checker checker-" +
-      color +
-      "'></div>"
-  );
-  $(".border").remove();
-  if (steps > 10) removingEaten(steps, moveTo, moveFrom, true);
-  switCheckers(true);
-}
-function extraMove(moveTo, moveFrom, color, extraNum) {
-  $("#td-" + moveTo).html(
-    "<div data-color='" +
-      color +
-      "' class='checker checker-" +
-      color +
-      "'></div>"
-  );
-  $("#td-" + moveTo)
-    .children()
-    .fadeOut(800, function() {
-      $(this).remove();
-    });
+  $("#td-" + moveTo).children().remove();
   $("#td-" + moveTo).addClass("td-clickable");
   $("#td-" + moveFrom).addClass("td-clickable");
-  $("#td-" + (moveTo + extraNum)).html(
-    "<div data-color='" +
-      color +
-      "' class='checker checker-" +
-      color +
-      "'></div>"
-  );
+}
+let num = 0;
+function moveChecker(steps, moveTo, moveFrom, color){
+  $("#td-" + moveTo).html("<div data-color='" +color +"' class='checker checker-" +color +"'></div>");
+  $(".border").remove();
+  if(num % 2 == 0){
+    if (steps == 16 || steps == 20 || steps == -16 || steps == -20){removingEaten(steps, moveTo, moveFrom, true);} 
+    switchTurn(true);
+  }else{
+    if (steps == 16 || steps == 20 || steps == -16 || steps == -20){removingEaten(steps, moveTo, moveFrom, false);}
+    switchTurn(false);
+  }
+  num++;
+}
+
+function extraMove(moveTo, moveFrom, color, extraNum) {
+  $("#td-" + moveTo).html("<div data-color='" +color +"' class='checker checker-" +color +"'></div>");
+  $("#td-" + moveTo).children().fadeOut(800, function() {
+    $(this).remove(); 
+  });
+  $("#td-" + moveTo).addClass("td-clickable");
+  $("#td-" + moveFrom).addClass("td-clickable");
+  $("#td-" + (moveTo + extraNum)).html("<div data-color='" +color +"' class='checker checker-" +color +"'></div>");
   $("#td-" + (moveTo + extraNum)).removeClass("td-clickable");
-  $("#td-" + (moveTo + extraNum / 2))
-    .children()
-    .remove();
+  $("#td-" + (moveTo + extraNum / 2)).children().remove();
   $("#td-" + (moveTo + extraNum / 2)).addClass("td-clickable");
   $("#td-" + moveFrom).addClass("td-clickable");
 }
@@ -227,114 +176,64 @@ $(document).on("click", ".td-clickable", function() {
 
       // simple moving forward checkers white & black
       if ((stepsBlack == 8 || stepsBlack == 10) && color == "black") {
-        blackMove(stepsBlack, moveTo, moveFrom, color);
+        moveChecker(stepsBlack, moveTo, moveFrom, color);
         addClickable();
-      } else if ((stepsWhite == 8 || stepsWhite == 10) && color == "white") {
-        whiteMove(stepsWhite, moveTo, moveFrom, color);
+      }else if((stepsWhite == 8 || stepsWhite == 10) && color == "white") {
+        moveChecker(stepsWhite, moveTo, moveFrom, color);
         addClickable();
       }
       /**
        * eating opponent part with extra eating moves
+       * with ability to Eat to the oppsite side.
        */
-      if (
-        stepsBlack == 16 &&
-        $("#td-" + (moveTo + 8))
-          .children()
-          .hasClass("checker-white")
-      ) {
-        blackMove(stepsBlack, moveTo, moveFrom, color);
-        if (
-          $("#td-" + (moveTo + 20)).html().length == 0 &&
-          $("#td-" + (moveTo + 10)).find("div.checker-white").length != 0
-        ) {
-          extraMove(moveTo, moveFrom, color, 20);
-        } else if (
-          $("#td-" + (moveTo - 16)).html().length == 0 &&
-          $("#td-" + (moveTo - 8)).find("div.checker-white").length != 0
-        ) {
-          extraMove(moveTo, moveFrom, color, -16);
-        } else if (
-          $("#td-" + (moveTo - 20)).html().length == 0 &&
-          $("#td-" + (moveTo - 10)).find("div.checker-white").length != 0
-        ) {
-          extraMove(moveTo, moveFrom, color, -20);
-        }
+      if (stepsBlack == 16 && color == "black" || stepsWhite == -16 && color =="white"||
+          stepsBlack == 20 && color == "black"|| stepsWhite == -20 && color =="white" ) {
+            // gives the WhiteChecker to the oppsite side (right & left)
+            // normal eating for black
+            if($("#td-" + (moveTo + 8)).children().hasClass("checker-white") && color == "black" ||
+               $("#td-" + (moveTo + 10)).children().hasClass("checker-white") && color == "black"){
+                moveChecker(stepsBlack, moveTo, moveFrom, color);
+            // white eating from the opposite direction
+            }else if($("#td-" + (moveTo + 8)).children().hasClass("checker-black") && color == "white"||
+                     $("#td-" + (moveTo + 10)).children().hasClass("checker-black") && color == "white"){
+                moveChecker(stepsWhite, moveTo, moveFrom, color);
+            }
+            // exta moves TODO
+            if ($("#td-" + (moveTo + 20)).html().length == 0 && 
+                $("#td-" + (moveTo + 10)).find("div.checker-white").length != 0) {
+                extraMove(moveTo, moveFrom, color, 20);
+            }else if ($("#td-" + (moveTo - 16)).html().length == 0 &&
+                      $("#td-" + (moveTo - 8)).find("div.checker-white").length != 0) {
+                extraMove(moveTo, moveFrom, color, -16);
+            }else if ($("#td-" + (moveTo - 20)).html().length == 0 &&
+                      $("#td-" + (moveTo - 10)).find("div.checker-white").length != 0) {
+                extraMove(moveTo, moveFrom, color, -20);
+            }
       }
-
-      // eating to the left -- black
-      if (
-        stepsBlack == 20 &&
-        $("#td-" + (moveTo + 10))
-          .children()
-          .hasClass("checker-white")
-      ) {
-        blackMove(stepsBlack, moveTo, moveFrom, color);
-        if (
-          $("#td-" + (moveTo + 16)).html().length == 0 &&
-          $("#td-" + (moveTo + 8)).find("div.checker-white").length != 0
-        ) {
-          extraMove(moveTo, moveFrom, color, 16);
-        } else if (
-          $("#td-" + (moveTo - 16)).html().length == 0 &&
-          $("#td-" + (moveTo - 8)).find("div.checker-white").length != 0
-        ) {
-          extraMove(moveTo, moveFrom, color, -16);
-        } else if (
-          $("#td-" + (moveTo - 20)).html().length == 0 &&
-          $("#td-" + (moveTo - 10)).find("div.checker-white").length != 0
-        ) {
-          extraMove(moveTo, moveFrom, color, -20);
-        }
-      }
-
-      // white eating black
-      if (
-        stepsWhite == 20 &&
-        $("#td-" + (moveTo - 10))
-          .children()
-          .hasClass("checker-black")
-      ) {
-        whiteMove(stepsWhite, moveTo, moveFrom, color);
-        if (
-          $("#td-" + (moveTo + 20)).html().length == 0 &&
-          $("#td-" + (moveTo + 10)).find("div.checker-black").length != 0
-        ) {
-          extraMove(moveTo, moveFrom, color, 20);
-        } else if (
-          $("#td-" + (moveTo + 16)).html().length == 0 &&
-          $("#td-" + (moveTo + 8)).find("div.checker-black").length != 0
-        ) {
-          extraMove(moveTo, moveFrom, color, 16);
-        } else if (
-          $("#td-" + (moveTo - 16)).html().length == 0 &&
-          $("#td-" + (moveTo - 8)).find("div.checker-black").length != 0
-        ) {
-          extraMove(moveTo, moveFrom, color, -16);
-        }
-      }
-      if (
-        stepsWhite == 16 &&
-        $("#td-" + (moveTo - 8))
-          .children()
-          .hasClass("checker-black")
-      ) {
-        whiteMove(stepsWhite, moveTo, moveFrom, color);
-        if (
-          $("#td-" + (moveTo + 20)).html().length == 0 &&
-          $("#td-" + (moveTo + 10)).find("div.checker-black").length != 0
-        ) {
-          extraMove(moveTo, moveFrom, color, 20);
-        } else if (
-          $("#td-" + (moveTo - 20)).html().length == 0 &&
-          $("#td-" + (moveTo - 10)).find("div.checker-black").length != 0
-        ) {
-          extraMove(moveTo, moveFrom, color, -20);
-        } else if (
-          $("#td-" + (moveTo + 16)).html().length == 0 &&
-          $("#td-" + (moveTo + 8)).find("div.checker-black").length != 0
-        ) {
-          extraMove(moveTo, moveFrom, color, 16);
-        }
+      // white eating black & BlackChecker on opposite direction
+      if (stepsWhite == 20 && color =="white" || stepsWhite == 16 && color =="white" ||
+          stepsBlack == -20 && color == "black" || stepsBlack == -16 && color == "black") {
+          // gives the BlackChecker to the oppsite side (right & left)
+          // normal eating for White
+          if($("#td-" + (moveTo - 8)).children().hasClass("checker-black") && color == "white" ||
+             $("#td-" + (moveTo - 10)).children().hasClass("checker-black") && color == "white"){
+              moveChecker(stepsWhite, moveTo, moveFrom, color);
+          // BlackChecker eating from the opposite direction
+          }else if($("#td-" + (moveTo - 8)).children().hasClass("checker-white") && color == "black"||
+                   $("#td-" + (moveTo - 10)).children().hasClass("checker-white") && color == "black"){
+              moveChecker(stepsBlack, moveTo, moveFrom, color);
+          }
+          // extra moves TODO
+          if ($("#td-" + (moveTo + 20)).html().length == 0 &&
+              $("#td-" + (moveTo + 10)).find("div.checker-black").length != 0) {
+              extraMove(moveTo, moveFrom, color, 20);
+          }else if ($("#td-" + (moveTo + 16)).html().length == 0 &&
+                    $("#td-" + (moveTo + 8)).find("div.checker-black").length != 0) {
+              extraMove(moveTo, moveFrom, color, 16);
+          }else if ($("#td-" + (moveTo - 16)).html().length == 0 &&
+                    $("#td-" + (moveTo - 8)).find("div.checker-black").length != 0) {
+              extraMove(moveTo, moveFrom, color, -16);
+          }
       }
     }
   }
