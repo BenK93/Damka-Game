@@ -5,7 +5,7 @@ Game Play Developed in JS Jquery enviorment.
 The project is still in progress.
 
 Now:
-  -The game can be played with one another on the same computer.
+  -The game can be played 1 vs 1 on the same computer.
   
 Goal: 
   -To make interactive Game so players can play online with each other.
